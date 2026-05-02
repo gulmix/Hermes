@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package user.v1;
+
+import "common/v1/common.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/gulmix/hermes/gen/go/user/v1;userv1";
+
+service UserService {
+    rpc GetUser(GetUserRequest) returns (GetUserResponse);
+    rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
+    rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+    rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
+    rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+    rpc WatchUsers(WatchUsersRequest) returns (stream UserEvent);
+}
+
+message User {
+    string id = 1;
+    string email = 2;
+    string display_name = 3;
+    UserStatus status = 4;
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
+}
+
+enum UserStatus {
+  USER_STATUS_UNSPECIFIED = 0;
+  USER_STATUS_ACTIVE = 1;
+  USER_STATUS_INACTIVE = 2;
+  USER_STATUS_BANNED = 3;
+}
+
+message GetUserRequest {
+  string id = 1;
+}
+
+message GetUserResponse {
+  User user = 1;
+}
+
+message ListUsersRequest {
+  common.v1.PageRequest page = 1;
+  UserStatus status_filter = 2;
+}
+
+message ListUsersResponse {
+  repeated User users = 1;
+  common.v1.PageResponse page = 2;
+}
+
+message CreateUserRequest {
+  string email = 1;
+  string display_name = 2;
+}
+
+message CreateUserResponse {
+  User user = 1;
+}
+
+message UpdateUserRequest {
+  string id = 1;
+  string display_name = 2;
+  UserStatus status = 3;
+}
+
+message UpdateUserResponse {
+  User user = 1;
+}
+
+message DeleteUserRequest {
+  string id = 1;
+}
+
+message DeleteUserResponse {}
+
+message WatchUsersRequest {
+  UserStatus status_filter = 1;
+}
+
+message UserEvent {
+  EventType type = 1;
+  User user = 2;
+
+  enum EventType {
+    EVENT_TYPE_UNSPECIFIED = 0;
+    EVENT_TYPE_CREATED = 1;
+    EVENT_TYPE_UPDATED = 2;
+    EVENT_TYPE_DELETED = 3;
+  }
+}

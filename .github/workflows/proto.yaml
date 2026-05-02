@@ -1,0 +1,86 @@
+name: Proto CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'proto/**'
+  pull_request:
+    paths:
+      - 'proto/**'
+
+jobs:
+  proto-lint:
+    name: Lint proto files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  
+      - name: Setup buf
+        uses: bufbuild/buf-action@v1
+        with:
+          version: '1.47.2'
+
+      - name: Lint
+        run: buf lint
+        working-directory: proto
+
+      - name: Format check
+        run: buf format --diff --exit-code
+        working-directory: proto
+
+  proto-breaking:
+    name: Breaking change detection
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup buf
+        uses: bufbuild/buf-action@v1
+        with:
+          version: '1.47.2'
+
+      - name: Check breaking changes
+        run: |
+          buf breaking \
+            --against "../../.git#branch=${{ github.base_ref }},subdir=proto"
+        working-directory: proto
+
+  proto-generate:
+    name: Verify generated code is up-to-date
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+
+      - name: Install protoc plugins
+        run: |
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+      - name: Setup buf
+        uses: bufbuild/buf-action@v1
+        with:
+          version: '1.47.2'
+
+      - name: Generate
+        run: buf generate
+        working-directory: proto
+
+      - name: Check for uncommitted changes
+        run: |
+          if ! git diff --exit-code gen/; then
+            echo "ERROR: generated code is out of date. Run 'make proto-gen' and commit the result."
+            exit 1
+          fi

@@ -3,10 +3,9 @@ package interceptor
 import (
 	"context"
 
+	grpcmw "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
-
-	grpcmw "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 )
 
 func zapLogger(log *zap.Logger) grpcmw.Logger {

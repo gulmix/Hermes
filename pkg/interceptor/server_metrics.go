@@ -8,9 +8,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-var (
-	Metrics = grpcprom.NewServerMetrics()
-)
+var Metrics = grpcprom.NewServerMetrics()
 
 func MetricsUnary() grpc.UnaryServerInterceptor {
 	return Metrics.UnaryServerInterceptor()
@@ -23,7 +21,7 @@ func MetricsStream() grpc.StreamServerInterceptor {
 func ServeMetrics(addr string) {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", promhttp.Handler())
-	go http.ListenAndServe(addr, mux)
+	go http.ListenAndServe(addr, mux) //nolint:errcheck
 }
 
 func InitializeMetrics(s *grpc.Server) {

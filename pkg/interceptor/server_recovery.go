@@ -12,7 +12,7 @@ import (
 )
 
 func recoveryHandler(log *zap.Logger) recovery.RecoveryHandlerFuncContext {
-	return func(ctx context.Context, p any) (err error) {
+	return func(ctx context.Context, p any) error {
 		log.Error("panic recovered", zap.Any("panic", p), zap.ByteString("stack", debug.Stack()))
 		return status.Errorf(codes.Internal, "internal server error")
 	}

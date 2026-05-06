@@ -1,4 +1,4 @@
-package server
+package tlsconfig
 
 import (
 	"crypto/tls"
@@ -9,14 +9,14 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
-type TLSConfig struct {
+type ServerConfig struct {
 	CertFile   string
 	KeyFile    string
 	CAFile     string
 	ClientAuth bool
 }
 
-func LoadTLSCredentials(cfg TLSConfig) (credentials.TransportCredentials, error) {
+func LoadServerTLS(cfg ServerConfig) (credentials.TransportCredentials, error) {
 	cert, err := tls.LoadX509KeyPair(cfg.CertFile, cfg.KeyFile)
 	if err != nil {
 		return nil, fmt.Errorf("load key pair: %w", err)

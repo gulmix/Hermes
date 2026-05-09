@@ -12,6 +12,7 @@ service OrderService {
   rpc ListOrders(ListOrdersRequest) returns (ListOrdersResponse);
   rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
   rpc CancelOrder(CancelOrderRequest) returns (CancelOrderResponse);
+  rpc UploadOrderEvents(stream OrderEventRequest) returns (OrderEventResponse);
   rpc StreamOrderUpdates(stream OrderStatusRequest) returns (stream OrderStatusResponse);
 }
 
@@ -85,4 +86,15 @@ message OrderStatusResponse {
   string order_id = 1;
   OrderStatus status = 2;
   google.protobuf.Timestamp updated_at = 3;
+}
+
+message OrderEventRequest {
+  string order_id = 1;
+  OrderStatus new_status = 2;
+  string note = 3;
+}
+
+message OrderEventResponse {
+  int32 accepted = 1;
+  int32 rejected = 2;
 }

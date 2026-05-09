@@ -729,6 +729,118 @@ func (x *OrderStatusResponse) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+type OrderEventRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	OrderId       string                 `protobuf:"bytes,1,opt,name=order_id,json=orderId,proto3" json:"order_id,omitempty"`
+	NewStatus     OrderStatus            `protobuf:"varint,2,opt,name=new_status,json=newStatus,proto3,enum=order.v1.OrderStatus" json:"new_status,omitempty"`
+	Note          string                 `protobuf:"bytes,3,opt,name=note,proto3" json:"note,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OrderEventRequest) Reset() {
+	*x = OrderEventRequest{}
+	mi := &file_order_v1_order_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OrderEventRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OrderEventRequest) ProtoMessage() {}
+
+func (x *OrderEventRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_order_v1_order_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OrderEventRequest.ProtoReflect.Descriptor instead.
+func (*OrderEventRequest) Descriptor() ([]byte, []int) {
+	return file_order_v1_order_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *OrderEventRequest) GetOrderId() string {
+	if x != nil {
+		return x.OrderId
+	}
+	return ""
+}
+
+func (x *OrderEventRequest) GetNewStatus() OrderStatus {
+	if x != nil {
+		return x.NewStatus
+	}
+	return OrderStatus_ORDER_STATUS_UNSPECIFIED
+}
+
+func (x *OrderEventRequest) GetNote() string {
+	if x != nil {
+		return x.Note
+	}
+	return ""
+}
+
+type OrderEventResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Accepted      int32                  `protobuf:"varint,1,opt,name=accepted,proto3" json:"accepted,omitempty"`
+	Rejected      int32                  `protobuf:"varint,2,opt,name=rejected,proto3" json:"rejected,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OrderEventResponse) Reset() {
+	*x = OrderEventResponse{}
+	mi := &file_order_v1_order_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OrderEventResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OrderEventResponse) ProtoMessage() {}
+
+func (x *OrderEventResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_order_v1_order_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OrderEventResponse.ProtoReflect.Descriptor instead.
+func (*OrderEventResponse) Descriptor() ([]byte, []int) {
+	return file_order_v1_order_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *OrderEventResponse) GetAccepted() int32 {
+	if x != nil {
+		return x.Accepted
+	}
+	return 0
+}
+
+func (x *OrderEventResponse) GetRejected() int32 {
+	if x != nil {
+		return x.Rejected
+	}
+	return 0
+}
+
 var File_order_v1_order_proto protoreflect.FileDescriptor
 
 const file_order_v1_order_proto_rawDesc = "" +
@@ -778,20 +890,29 @@ const file_order_v1_order_proto_rawDesc = "" +
 	"\border_id\x18\x01 \x01(\tR\aorderId\x12-\n" +
 	"\x06status\x18\x02 \x01(\x0e2\x15.order.v1.OrderStatusR\x06status\x129\n" +
 	"\n" +
-	"updated_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt*\xb3\x01\n" +
+	"updated_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"x\n" +
+	"\x11OrderEventRequest\x12\x19\n" +
+	"\border_id\x18\x01 \x01(\tR\aorderId\x124\n" +
+	"\n" +
+	"new_status\x18\x02 \x01(\x0e2\x15.order.v1.OrderStatusR\tnewStatus\x12\x12\n" +
+	"\x04note\x18\x03 \x01(\tR\x04note\"L\n" +
+	"\x12OrderEventResponse\x12\x1a\n" +
+	"\baccepted\x18\x01 \x01(\x05R\baccepted\x12\x1a\n" +
+	"\brejected\x18\x02 \x01(\x05R\brejected*\xb3\x01\n" +
 	"\vOrderStatus\x12\x1c\n" +
 	"\x18ORDER_STATUS_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14ORDER_STATUS_PENDING\x10\x01\x12\x1a\n" +
 	"\x16ORDER_STATUS_CONFIRMED\x10\x02\x12\x18\n" +
 	"\x14ORDER_STATUS_SHIPPED\x10\x03\x12\x1a\n" +
 	"\x16ORDER_STATUS_DELIVERED\x10\x04\x12\x1a\n" +
-	"\x16ORDER_STATUS_CANCELLED\x10\x052\x89\x03\n" +
+	"\x16ORDER_STATUS_CANCELLED\x10\x052\xdb\x03\n" +
 	"\fOrderService\x12A\n" +
 	"\bGetOrder\x12\x19.order.v1.GetOrderRequest\x1a\x1a.order.v1.GetOrderResponse\x12G\n" +
 	"\n" +
 	"ListOrders\x12\x1b.order.v1.ListOrdersRequest\x1a\x1c.order.v1.ListOrdersResponse\x12J\n" +
 	"\vCreateOrder\x12\x1c.order.v1.CreateOrderRequest\x1a\x1d.order.v1.CreateOrderResponse\x12J\n" +
-	"\vCancelOrder\x12\x1c.order.v1.CancelOrderRequest\x1a\x1d.order.v1.CancelOrderResponse\x12U\n" +
+	"\vCancelOrder\x12\x1c.order.v1.CancelOrderRequest\x1a\x1d.order.v1.CancelOrderResponse\x12P\n" +
+	"\x11UploadOrderEvents\x12\x1b.order.v1.OrderEventRequest\x1a\x1c.order.v1.OrderEventResponse(\x01\x12U\n" +
 	"\x12StreamOrderUpdates\x12\x1c.order.v1.OrderStatusRequest\x1a\x1d.order.v1.OrderStatusResponse(\x010\x01B\x8d\x01\n" +
 	"\fcom.order.v1B\n" +
 	"OrderProtoP\x01Z0github.com/gulmix/hermes/gen/go/order/v1;orderv1\xa2\x02\x03OXX\xaa\x02\bOrder.V1\xca\x02\bOrder\\V1\xe2\x02\x14Order\\V1\\GPBMetadata\xea\x02\tOrder::V1b\x06proto3"
@@ -809,7 +930,7 @@ func file_order_v1_order_proto_rawDescGZIP() []byte {
 }
 
 var file_order_v1_order_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_order_v1_order_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_order_v1_order_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_order_v1_order_proto_goTypes = []any{
 	(OrderStatus)(0),              // 0: order.v1.OrderStatus
 	(*Order)(nil),                 // 1: order.v1.Order
@@ -824,40 +945,45 @@ var file_order_v1_order_proto_goTypes = []any{
 	(*CancelOrderResponse)(nil),   // 10: order.v1.CancelOrderResponse
 	(*OrderStatusRequest)(nil),    // 11: order.v1.OrderStatusRequest
 	(*OrderStatusResponse)(nil),   // 12: order.v1.OrderStatusResponse
-	(*timestamppb.Timestamp)(nil), // 13: google.protobuf.Timestamp
-	(*v1.PageRequest)(nil),        // 14: common.v1.PageRequest
-	(*v1.PageResponse)(nil),       // 15: common.v1.PageResponse
+	(*OrderEventRequest)(nil),     // 13: order.v1.OrderEventRequest
+	(*OrderEventResponse)(nil),    // 14: order.v1.OrderEventResponse
+	(*timestamppb.Timestamp)(nil), // 15: google.protobuf.Timestamp
+	(*v1.PageRequest)(nil),        // 16: common.v1.PageRequest
+	(*v1.PageResponse)(nil),       // 17: common.v1.PageResponse
 }
 var file_order_v1_order_proto_depIdxs = []int32{
 	2,  // 0: order.v1.Order.items:type_name -> order.v1.OrderItem
 	0,  // 1: order.v1.Order.status:type_name -> order.v1.OrderStatus
-	13, // 2: order.v1.Order.created_at:type_name -> google.protobuf.Timestamp
-	13, // 3: order.v1.Order.updated_at:type_name -> google.protobuf.Timestamp
+	15, // 2: order.v1.Order.created_at:type_name -> google.protobuf.Timestamp
+	15, // 3: order.v1.Order.updated_at:type_name -> google.protobuf.Timestamp
 	1,  // 4: order.v1.GetOrderResponse.order:type_name -> order.v1.Order
-	14, // 5: order.v1.ListOrdersRequest.page:type_name -> common.v1.PageRequest
+	16, // 5: order.v1.ListOrdersRequest.page:type_name -> common.v1.PageRequest
 	0,  // 6: order.v1.ListOrdersRequest.status_filter:type_name -> order.v1.OrderStatus
 	1,  // 7: order.v1.ListOrdersResponse.orders:type_name -> order.v1.Order
-	15, // 8: order.v1.ListOrdersResponse.page:type_name -> common.v1.PageResponse
+	17, // 8: order.v1.ListOrdersResponse.page:type_name -> common.v1.PageResponse
 	2,  // 9: order.v1.CreateOrderRequest.items:type_name -> order.v1.OrderItem
 	1,  // 10: order.v1.CreateOrderResponse.order:type_name -> order.v1.Order
 	1,  // 11: order.v1.CancelOrderResponse.order:type_name -> order.v1.Order
 	0,  // 12: order.v1.OrderStatusResponse.status:type_name -> order.v1.OrderStatus
-	13, // 13: order.v1.OrderStatusResponse.updated_at:type_name -> google.protobuf.Timestamp
-	3,  // 14: order.v1.OrderService.GetOrder:input_type -> order.v1.GetOrderRequest
-	5,  // 15: order.v1.OrderService.ListOrders:input_type -> order.v1.ListOrdersRequest
-	7,  // 16: order.v1.OrderService.CreateOrder:input_type -> order.v1.CreateOrderRequest
-	9,  // 17: order.v1.OrderService.CancelOrder:input_type -> order.v1.CancelOrderRequest
-	11, // 18: order.v1.OrderService.StreamOrderUpdates:input_type -> order.v1.OrderStatusRequest
-	4,  // 19: order.v1.OrderService.GetOrder:output_type -> order.v1.GetOrderResponse
-	6,  // 20: order.v1.OrderService.ListOrders:output_type -> order.v1.ListOrdersResponse
-	8,  // 21: order.v1.OrderService.CreateOrder:output_type -> order.v1.CreateOrderResponse
-	10, // 22: order.v1.OrderService.CancelOrder:output_type -> order.v1.CancelOrderResponse
-	12, // 23: order.v1.OrderService.StreamOrderUpdates:output_type -> order.v1.OrderStatusResponse
-	19, // [19:24] is the sub-list for method output_type
-	14, // [14:19] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	15, // 13: order.v1.OrderStatusResponse.updated_at:type_name -> google.protobuf.Timestamp
+	0,  // 14: order.v1.OrderEventRequest.new_status:type_name -> order.v1.OrderStatus
+	3,  // 15: order.v1.OrderService.GetOrder:input_type -> order.v1.GetOrderRequest
+	5,  // 16: order.v1.OrderService.ListOrders:input_type -> order.v1.ListOrdersRequest
+	7,  // 17: order.v1.OrderService.CreateOrder:input_type -> order.v1.CreateOrderRequest
+	9,  // 18: order.v1.OrderService.CancelOrder:input_type -> order.v1.CancelOrderRequest
+	13, // 19: order.v1.OrderService.UploadOrderEvents:input_type -> order.v1.OrderEventRequest
+	11, // 20: order.v1.OrderService.StreamOrderUpdates:input_type -> order.v1.OrderStatusRequest
+	4,  // 21: order.v1.OrderService.GetOrder:output_type -> order.v1.GetOrderResponse
+	6,  // 22: order.v1.OrderService.ListOrders:output_type -> order.v1.ListOrdersResponse
+	8,  // 23: order.v1.OrderService.CreateOrder:output_type -> order.v1.CreateOrderResponse
+	10, // 24: order.v1.OrderService.CancelOrder:output_type -> order.v1.CancelOrderResponse
+	14, // 25: order.v1.OrderService.UploadOrderEvents:output_type -> order.v1.OrderEventResponse
+	12, // 26: order.v1.OrderService.StreamOrderUpdates:output_type -> order.v1.OrderStatusResponse
+	21, // [21:27] is the sub-list for method output_type
+	15, // [15:21] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_order_v1_order_proto_init() }
@@ -871,7 +997,7 @@ func file_order_v1_order_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_order_v1_order_proto_rawDesc), len(file_order_v1_order_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   12,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

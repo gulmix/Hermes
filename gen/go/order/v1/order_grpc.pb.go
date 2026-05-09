@@ -23,6 +23,7 @@ const (
 	OrderService_ListOrders_FullMethodName         = "/order.v1.OrderService/ListOrders"
 	OrderService_CreateOrder_FullMethodName        = "/order.v1.OrderService/CreateOrder"
 	OrderService_CancelOrder_FullMethodName        = "/order.v1.OrderService/CancelOrder"
+	OrderService_UploadOrderEvents_FullMethodName  = "/order.v1.OrderService/UploadOrderEvents"
 	OrderService_StreamOrderUpdates_FullMethodName = "/order.v1.OrderService/StreamOrderUpdates"
 )
 
@@ -34,6 +35,7 @@ type OrderServiceClient interface {
 	ListOrders(ctx context.Context, in *ListOrdersRequest, opts ...grpc.CallOption) (*ListOrdersResponse, error)
 	CreateOrder(ctx context.Context, in *CreateOrderRequest, opts ...grpc.CallOption) (*CreateOrderResponse, error)
 	CancelOrder(ctx context.Context, in *CancelOrderRequest, opts ...grpc.CallOption) (*CancelOrderResponse, error)
+	UploadOrderEvents(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[OrderEventRequest, OrderEventResponse], error)
 	StreamOrderUpdates(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[OrderStatusRequest, OrderStatusResponse], error)
 }
 
@@ -85,9 +87,22 @@ func (c *orderServiceClient) CancelOrder(ctx context.Context, in *CancelOrderReq
 	return out, nil
 }
 
+func (c *orderServiceClient) UploadOrderEvents(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[OrderEventRequest, OrderEventResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &OrderService_ServiceDesc.Streams[0], OrderService_UploadOrderEvents_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[OrderEventRequest, OrderEventResponse]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type OrderService_UploadOrderEventsClient = grpc.ClientStreamingClient[OrderEventRequest, OrderEventResponse]
+
 func (c *orderServiceClient) StreamOrderUpdates(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[OrderStatusRequest, OrderStatusResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &OrderService_ServiceDesc.Streams[0], OrderService_StreamOrderUpdates_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &OrderService_ServiceDesc.Streams[1], OrderService_StreamOrderUpdates_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -106,6 +121,7 @@ type OrderServiceServer interface {
 	ListOrders(context.Context, *ListOrdersRequest) (*ListOrdersResponse, error)
 	CreateOrder(context.Context, *CreateOrderRequest) (*CreateOrderResponse, error)
 	CancelOrder(context.Context, *CancelOrderRequest) (*CancelOrderResponse, error)
+	UploadOrderEvents(grpc.ClientStreamingServer[OrderEventRequest, OrderEventResponse]) error
 	StreamOrderUpdates(grpc.BidiStreamingServer[OrderStatusRequest, OrderStatusResponse]) error
 	mustEmbedUnimplementedOrderServiceServer()
 }
@@ -128,6 +144,9 @@ func (UnimplementedOrderServiceServer) CreateOrder(context.Context, *CreateOrder
 }
 func (UnimplementedOrderServiceServer) CancelOrder(context.Context, *CancelOrderRequest) (*CancelOrderResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CancelOrder not implemented")
+}
+func (UnimplementedOrderServiceServer) UploadOrderEvents(grpc.ClientStreamingServer[OrderEventRequest, OrderEventResponse]) error {
+	return status.Error(codes.Unimplemented, "method UploadOrderEvents not implemented")
 }
 func (UnimplementedOrderServiceServer) StreamOrderUpdates(grpc.BidiStreamingServer[OrderStatusRequest, OrderStatusResponse]) error {
 	return status.Error(codes.Unimplemented, "method StreamOrderUpdates not implemented")
@@ -225,6 +244,13 @@ func _OrderService_CancelOrder_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OrderService_UploadOrderEvents_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(OrderServiceServer).UploadOrderEvents(&grpc.GenericServerStream[OrderEventRequest, OrderEventResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type OrderService_UploadOrderEventsServer = grpc.ClientStreamingServer[OrderEventRequest, OrderEventResponse]
+
 func _OrderService_StreamOrderUpdates_Handler(srv interface{}, stream grpc.ServerStream) error {
 	return srv.(OrderServiceServer).StreamOrderUpdates(&grpc.GenericServerStream[OrderStatusRequest, OrderStatusResponse]{ServerStream: stream})
 }
@@ -257,6 +283,11 @@ var OrderService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "UploadOrderEvents",
+			Handler:       _OrderService_UploadOrderEvents_Handler,
+			ClientStreams: true,
+		},
 		{
 			StreamName:    "StreamOrderUpdates",
 			Handler:       _OrderService_StreamOrderUpdates_Handler,

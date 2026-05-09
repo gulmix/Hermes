@@ -52,6 +52,7 @@ func main() {
 			interceptor.RecoveryUnary(log),
 			interceptor.LoggingUnary(log),
 			interceptor.MetricsUnary(),
+			interceptor.DeadlineUnary(),
 		),
 		grpc.ChainStreamInterceptor(
 			interceptor.RecoveryStream(log),

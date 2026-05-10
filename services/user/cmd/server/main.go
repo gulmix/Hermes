@@ -7,8 +7,10 @@ import (
 	"syscall"
 
 	userv1 "github.com/gulmix/hermes/gen/go/user/v1"
+	_ "github.com/gulmix/hermes/pkg/compression"
 	"github.com/gulmix/hermes/pkg/grpcserver"
 	"github.com/gulmix/hermes/pkg/interceptor"
+	"github.com/gulmix/hermes/pkg/pprof"
 	"github.com/gulmix/hermes/pkg/telemetry"
 	"github.com/gulmix/hermes/pkg/tlsconfig"
 	"github.com/gulmix/hermes/services/user/internal/handler"
@@ -29,8 +31,13 @@ func main() {
 	}
 	defer otelShutdown(context.Background())
 
+	if addr := os.Getenv("PPROF_ADDR"); addr != "" {
+		go pprof.Serve(addr, log)
+	}
+
 	isDev := os.Getenv("ENV") == "dev"
-	opts := []grpc.ServerOption{
+	opts := grpcserver.DefaultKeepaliveOpts()
+	opts = append(opts,
 		interceptor.OTelStatsHandler(),
 		grpc.ChainUnaryInterceptor(
 			interceptor.RecoveryUnary(log),
@@ -43,7 +50,7 @@ func main() {
 			interceptor.LoggingStream(log),
 			interceptor.MetricsStream(),
 		),
-	}
+	)
 	if !isDev {
 		tlsCreds, err := tlsconfig.LoadServerTLS(tlsconfig.ServerConfig{
 			CertFile:   "certs/server.crt",

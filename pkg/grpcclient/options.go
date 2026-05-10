@@ -6,6 +6,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/keepalive"
 )
 
 type Options struct {
@@ -54,5 +55,25 @@ func WithTLS(cfg TLSConfig) Option {
 func WithDialOpts(opts ...grpc.DialOption) Option {
 	return func(o *Options) {
 		o.extraDialOpts = append(o.extraDialOpts, opts...)
+	}
+}
+
+func WithKeepalive(pingTime, timeout time.Duration, permitWithoutStream bool) Option {
+	return func(o *Options) {
+		o.extraDialOpts = append(o.extraDialOpts,
+			grpc.WithKeepaliveParams(keepalive.ClientParameters{
+				Time:                pingTime,
+				Timeout:             timeout,
+				PermitWithoutStream: permitWithoutStream,
+			}),
+		)
+	}
+}
+
+func WithCompression(codec string) Option {
+	return func(o *Options) {
+		o.extraDialOpts = append(o.extraDialOpts,
+			grpc.WithDefaultCallOptions(grpc.UseCompressor(codec)),
+		)
 	}
 }

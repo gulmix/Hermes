@@ -8,9 +8,11 @@ import (
 	"time"
 
 	orderv1 "github.com/gulmix/hermes/gen/go/order/v1"
+	_ "github.com/gulmix/hermes/pkg/compression"
 	"github.com/gulmix/hermes/pkg/grpcclient"
 	"github.com/gulmix/hermes/pkg/grpcserver"
 	"github.com/gulmix/hermes/pkg/interceptor"
+	"github.com/gulmix/hermes/pkg/pprof"
 	"github.com/gulmix/hermes/pkg/telemetry"
 	"github.com/gulmix/hermes/services/order/internal/client"
 	"github.com/gulmix/hermes/services/order/internal/handler"
@@ -45,8 +47,13 @@ func main() {
 
 	userClient := client.NewUserClient(userConn, log)
 
+	if addr := os.Getenv("PPROF_ADDR"); addr != "" {
+		go pprof.Serve(addr, log)
+	}
+
 	isDev := os.Getenv("ENV") == "dev"
-	opts := []grpc.ServerOption{
+	opts := grpcserver.DefaultKeepaliveOpts()
+	opts = append(opts,
 		interceptor.OTelStatsHandler(),
 		grpc.ChainUnaryInterceptor(
 			interceptor.RecoveryUnary(log),
@@ -59,7 +66,7 @@ func main() {
 			interceptor.LoggingStream(log),
 			interceptor.MetricsStream(),
 		),
-	}
+	)
 
 	interceptor.ServeMetrics(":9091")
 

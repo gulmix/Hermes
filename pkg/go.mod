@@ -3,6 +3,7 @@ module github.com/gulmix/hermes/pkg
 go 1.26.1
 
 require (
+	github.com/golang/snappy v1.0.0
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
